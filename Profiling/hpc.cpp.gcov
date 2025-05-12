@@ -1,0 +1,846 @@
+        -:    0:Source:hpc.cpp
+        -:    0:Graph:hpc.gcno
+        -:    0:Data:hpc.gcda
+        -:    0:Runs:1
+        -:    1:#include <iostream>
+        -:    2:#include <vector>
+        -:    3:#include <cmath>
+        -:    4:#include <random>
+        -:    5:#include<likwid.h>
+        -:    6:#include <fstream>
+        -:    7:#include <sstream>
+        -:    8:#include <iomanip>
+        -:    9:#include <algorithm>
+        -:   10:using namespace std;
+        -:   11:
+        -:   12:const int SEQ_LEN = 1024;
+        -:   13:const int EMBED_DIM = 1024;
+        -:   14:const int HIDDEN_DIM = 2048;
+        -:   15:const int NUM_HEADS = 8;
+        -:   16:const int HEAD_DIM = EMBED_DIM / NUM_HEADS;
+        -:   17:
+        -:   18://const int SEQ_LEN = 100000;
+        -:   19://const int EMBED_DIM = 512;
+        -:   20://const int HIDDEN_DIM = 2048;
+        -:   21://const int NUM_HEADS = 16;
+        -:   22://const int HEAD_DIM = EMBED_DIM / NUM_HEADS;
+        -:   23:
+        -:   24://LIKWID_MARKER_START("PrintVector");
+function _Z12print_vectorRKSt6vectorIfSaIfEERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE called 1 returned 100% blocks executed 100%
+        1:   25:void print_vector(const vector<float> &vec, const string &name)
+        -:   26:{
+        1:   27:    cout << name << ": [ ";
+call    0 returned 1
+call    1 returned 1
+     1025:   28:    for (float val : vec)
+call    0 returned 1
+call    1 returned 1
+call    2 returned 1024
+call    3 returned 1024
+call    4 returned 1025
+branch  5 taken 1024
+branch  6 taken 1 (fallthrough)
+        -:   29:    {
+     1024:   30:        cout << fixed << setprecision(4) << val << " ";
+call    0 returned 1024
+branch  1 taken 1024 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 1024
+call    4 returned 1024
+branch  5 taken 1024 (fallthrough)
+branch  6 taken 0 (throw)
+call    7 returned 1024
+branch  8 taken 1024 (fallthrough)
+branch  9 taken 0 (throw)
+call   10 returned 1024
+branch 11 taken 1024 (fallthrough)
+branch 12 taken 0 (throw)
+        -:   31:    }
+        1:   32:    cout << "]\n";
+call    0 returned 1
+        1:   33:}
+        -:   34://LIKWID_MARKER_STOP("PrintVector");
+        -:   35:
+        -:   36://LIKWID_MARKER_START("PrintMatrix");
+        -:   37:
+function _Z12print_matrixRKSt6vectorIS_IfSaIfEESaIS1_EERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEii called 3 returned 100% blocks executed 95%
+        3:   38:void print_matrix(const vector<vector<float>> &matrix, const string &name, int rows = 10, int cols = 10)
+        -:   39:{
+        3:   40:    cout << name << " (Showing first " << min(rows, (int)matrix.size()) << "x" << min(cols, (int)matrix[0].size()) << " values):\n";
+call    0 returned 3
+call    1 returned 3
+call    2 returned 3
+call    3 returned 3
+call    4 returned 3
+branch  5 taken 3 (fallthrough)
+branch  6 taken 0 (throw)
+call    7 returned 3
+branch  8 taken 3 (fallthrough)
+branch  9 taken 0 (throw)
+call   10 returned 3
+call   11 returned 3
+call   12 returned 3
+call   13 returned 3
+branch 14 taken 3 (fallthrough)
+branch 15 taken 0 (throw)
+call   16 returned 3
+branch 17 taken 3 (fallthrough)
+branch 18 taken 0 (throw)
+       33:   41:    for (int i = 0; i < min(rows, (int)matrix.size()); i++)
+call    0 returned 33
+call    1 returned 33
+branch  2 taken 30
+branch  3 taken 3 (fallthrough)
+        -:   42:    {
+       30:   43:        cout << "[ ";
+call    0 returned 30
+      330:   44:        for (int j = 0; j < min(cols, (int)matrix[i].size()); j++)
+call    0 returned 330
+call    1 returned 330
+call    2 returned 330
+branch  3 taken 300
+branch  4 taken 30 (fallthrough)
+        -:   45:        {
+      300:   46:            cout << fixed << setprecision(6) << matrix[i][j] << " ";
+call    0 returned 300
+call    1 returned 300
+call    2 returned 300
+call    3 returned 300
+call    4 returned 300
+call    5 returned 300
+call    6 returned 300
+        -:   47:        }
+       30:   48:        if (cols < (int)matrix[i].size())
+call    0 returned 30
+call    1 returned 30
+branch  2 taken 30 (fallthrough)
+branch  3 taken 0
+       30:   49:            cout << "... ]\n";
+call    0 returned 30
+        -:   50:        else
+    #####:   51:            cout << "]\n";
+call    0 never executed
+        -:   52:    }
+        3:   53:    cout << "...\n"; 
+call    0 returned 3
+        3:   54:}
+        -:   55://LIKWID_MARKER_STOP("PrintMatrix");
+        -:   56:
+        -:   57://LIKWID_MARKER_START("GenerateRandomMatrix");
+        -:   58:
+        -:   59:// Function to generate a random matrix
+function _Z22generate_random_matrixii called 28 returned 100% blocks executed 66%
+       28:   60:vector<vector<float>> generate_random_matrix(int rows, int cols)
+        -:   61:{
+       56:   62:    vector<vector<float>> matrix(rows, vector<float>(cols));
+call    0 returned 28
+call    1 returned 28
+call    2 returned 28
+branch  3 taken 28 (fallthrough)
+branch  4 taken 0 (throw)
+call    5 returned 28
+branch  6 taken 28 (fallthrough)
+branch  7 taken 0 (throw)
+call    8 returned 28
+call    9 returned 28
+       28:   63:    random_device rd;
+call    0 returned 28
+branch  1 taken 28 (fallthrough)
+branch  2 taken 0 (throw)
+       28:   64:    mt19937 gen(rd());
+call    0 returned 28
+branch  1 taken 28 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 28
+branch  4 taken 28 (fallthrough)
+branch  5 taken 0 (throw)
+       28:   65:    float scale = sqrt(2.0 / (rows + cols));
+       28:   66:    normal_distribution<float> dist(0.0, scale);
+call    0 returned 28
+branch  1 taken 28 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   67:
+    29724:   68:    for (int i = 0; i < rows; i++)
+branch  0 taken 29696
+branch  1 taken 28 (fallthrough)
+  9466880:   69:        for (int j = 0; j < cols; j++)
+branch  0 taken 9437184
+branch  1 taken 29696 (fallthrough)
+  9437184:   70:            matrix[i][j] = dist(gen);
+call    0 returned 9437184
+branch  1 taken 9437184 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 9437184
+call    4 returned 9437184
+        -:   71:
+       56:   72:    return matrix;
+       28:   73:}
+call    0 returned 28
+call    1 never executed
+call    2 never executed
+        -:   74:
+        -:   75://LIKWID_MARKER_STOP("GenerateRandomMatrix");
+        -:   76:
+        -:   77://LIKWID_MARKER_START("LoadEmbedding");
+        -:   78:
+        -:   79:// Function to load real BERT embeddings from a CSV file
+function _Z20load_bert_embeddingsRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE called 0 returned 0% blocks executed 0%
+    #####:   80:vector<vector<float>> load_bert_embeddings(const string &filename)
+        -:   81:{
+    #####:   82:    vector<vector<float>> embeddings;
+call    0 never executed
+    #####:   83:    ifstream file(filename);
+call    0 never executed
+branch  1 never executed
+branch  2 never executed
+    #####:   84:    string line;
+call    0 never executed
+        -:   85:
+    #####:   86:    while (getline(file, line))
+call    0 never executed
+branch  1 never executed
+branch  2 never executed
+call    3 never executed
+branch  4 never executed
+branch  5 never executed
+branch  6 never executed
+branch  7 never executed
+        -:   87:    {
+    #####:   88:        stringstream ss(line);
+call    0 never executed
+call    1 never executed
+branch  2 never executed
+branch  3 never executed
+    #####:   89:        string value;
+call    0 never executed
+    #####:   90:        vector<float> row;
+call    0 never executed
+        -:   91:
+    #####:   92:        while (getline(ss, value, ','))
+call    0 never executed
+branch  1 never executed
+branch  2 never executed
+call    3 never executed
+branch  4 never executed
+branch  5 never executed
+branch  6 never executed
+branch  7 never executed
+        -:   93:        {
+    #####:   94:            row.push_back(stof(value));
+call    0 never executed
+branch  1 never executed
+branch  2 never executed
+call    3 never executed
+branch  4 never executed
+branch  5 never executed
+        -:   95:        }
+        -:   96:
+    #####:   97:        embeddings.push_back(row);
+call    0 never executed
+branch  1 never executed
+branch  2 never executed
+    #####:   98:    }
+call    0 never executed
+call    1 never executed
+call    2 never executed
+call    3 never executed
+call    4 never executed
+call    5 never executed
+        -:   99:
+    #####:  100:    return embeddings;
+    #####:  101:}
+call    0 never executed
+call    1 never executed
+call    2 never executed
+call    3 never executed
+call    4 never executed
+        -:  102://LIKWID_MARKER_STOP("LoadEmbedding");
+        -:  103:
+        -:  104://LIKWID_MARKER_START("MatrixMultiplication");
+        -:  105:
+        -:  106:// Matrix Multiplication Function
+function _Z6matmulRKSt6vectorIS_IfSaIfEESaIS1_EES5_ called 35 returned 100% blocks executed 68%
+       35:  107:vector<vector<float>> matmul(const vector<vector<float>> &A, const vector<vector<float>> &B)
+        -:  108:{
+       35:  109:    int M = A.size();
+call    0 returned 35
+       35:  110:    int K = A[0].size();
+call    0 returned 35
+call    1 returned 35
+       35:  111:    int N = B[0].size();
+call    0 returned 35
+call    1 returned 35
+        -:  112:
+       35:  113:    if (K != B.size())
+call    0 returned 35
+branch  1 taken 0 (fallthrough)
+branch  2 taken 35
+        -:  114:    {
+    #####:  115:        throw runtime_error("Matrix dimension mismatch in multiplication");
+call    0 never executed
+call    1 never executed
+branch  2 never executed
+branch  3 never executed
+call    4 never executed
+call    5 never executed
+        -:  116:    }
+        -:  117:
+       70:  118:    vector<vector<float>> C(M, vector<float>(N, 0.0f));
+call    0 returned 35
+call    1 returned 35
+call    2 returned 35
+branch  3 taken 35 (fallthrough)
+branch  4 taken 0 (throw)
+call    5 returned 35
+branch  6 taken 35 (fallthrough)
+branch  7 taken 0 (throw)
+call    8 returned 35
+call    9 returned 35
+    35875:  119:    for (int i = 0; i < M; i++)
+branch  0 taken 35840
+branch  1 taken 35 (fallthrough)
+        -:  120:    {
+  8424448:  121:        for (int j = 0; j < N; j++)
+branch  0 taken 8388608
+branch  1 taken 35840 (fallthrough)
+        -:  122:        {
+  8388608:  123:            float sum = 0.0f;
+9672065024:  124:            for (int k = 0; k < K; k++)
+branch  0 taken 9663676416
+branch  1 taken 8388608 (fallthrough)
+        -:  125:            {
+9663676416:  126:                sum += A[i][k] * B[k][j];
+call    0 returned 9663676416
+call    1 returned 9663676416
+call    2 returned 9663676416
+call    3 returned 9663676416
+        -:  127:            }
+  8388608:  128:            C[i][j] = sum;
+call    0 returned 8388608
+call    1 returned 8388608
+        -:  129:        }
+        -:  130:    }
+       35:  131:    return C;
+        -:  132:}
+        -:  133://LIKWID_MARKER_STOP("MatrixMultiplication");
+        -:  134:
+        -:  135://LIKWID_MARKER_START("LayerNorm");
+        -:  136:
+function _Z10layer_normRKSt6vectorIS_IfSaIfEESaIS1_EEf called 2 returned 100% blocks executed 82%
+        2:  137:vector<vector<float>> layer_norm(const vector<vector<float>> &input, float eps = 1e-5)
+        -:  138:{
+        2:  139:    int rows = input.size();
+call    0 returned 2
+        2:  140:    int cols = input[0].size();
+call    0 returned 2
+call    1 returned 2
+        4:  141:    vector<vector<float>> normalized(rows, vector<float>(cols));
+call    0 returned 2
+call    1 returned 2
+call    2 returned 2
+branch  3 taken 2 (fallthrough)
+branch  4 taken 0 (throw)
+call    5 returned 2
+branch  6 taken 2 (fallthrough)
+branch  7 taken 0 (throw)
+call    8 returned 2
+call    9 returned 2
+        -:  142:
+     2050:  143:    for (int i = 0; i < rows; i++)
+branch  0 taken 2048
+branch  1 taken 2 (fallthrough)
+        -:  144:    {
+     2048:  145:        float mean = 0.0f;
+  2099200:  146:        for (int j = 0; j < cols; j++)
+branch  0 taken 2097152
+branch  1 taken 2048 (fallthrough)
+        -:  147:        {
+  2097152:  148:            mean += input[i][j];
+call    0 returned 2097152
+call    1 returned 2097152
+        -:  149:        }
+     2048:  150:        mean /= cols;
+        -:  151:
+     2048:  152:        float var = 0.0f;
+  2099200:  153:        for (int j = 0; j < cols; j++)
+branch  0 taken 2097152
+branch  1 taken 2048 (fallthrough)
+        -:  154:        {
+  2097152:  155:            var += (input[i][j] - mean) * (input[i][j] - mean);
+call    0 returned 2097152
+call    1 returned 2097152
+call    2 returned 2097152
+call    3 returned 2097152
+        -:  156:        }
+     2048:  157:        var /= cols;
+        -:  158:
+  2099200:  159:        for (int j = 0; j < cols; j++)
+branch  0 taken 2097152
+branch  1 taken 2048 (fallthrough)
+        -:  160:        {
+  2097152:  161:            normalized[i][j] = (input[i][j] - mean) / sqrt(var + eps);
+call    0 returned 2097152
+call    1 returned 2097152
+call    2 returned 2097152
+call    3 returned 2097152
+call    4 returned 2097152
+        -:  162:        }
+        -:  163:    }
+        2:  164:    return normalized;
+        -:  165:}
+        -:  166://LIKWID_MARKER_STOP("LayerNorm");
+        -:  167:
+        -:  168://LIKWID_MARKER_START("SelfAttention");
+        -:  169:
+        -:  170:// Self-Attention Mechanism
+function _Z14self_attentionRKSt6vectorIS_IfSaIfEESaIS1_EE called 1 returned 100% blocks executed 68%
+        1:  171:vector<vector<float>> self_attention(const vector<vector<float>> &input)
+        -:  172:{
+        -:  173:   
+        1:  174:    vector<vector<vector<float>>> head_outputs(NUM_HEADS);
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+        1:  175:    float scale_factor = 1.0f / sqrt(static_cast<float>(HEAD_DIM));
+        -:  176:
+        9:  177:    for (int h = 0; h < NUM_HEADS; h++)
+branch  0 taken 8
+branch  1 taken 1 (fallthrough)
+        -:  178:    {
+        -:  179:        // Generate weights for this head
+        8:  180:        auto Wq = generate_random_matrix(EMBED_DIM, HEAD_DIM);
+call    0 returned 8
+branch  1 taken 8 (fallthrough)
+branch  2 taken 0 (throw)
+        8:  181:        auto Wk = generate_random_matrix(EMBED_DIM, HEAD_DIM);
+call    0 returned 8
+branch  1 taken 8 (fallthrough)
+branch  2 taken 0 (throw)
+        8:  182:        auto Wv = generate_random_matrix(EMBED_DIM, HEAD_DIM);
+call    0 returned 8
+branch  1 taken 8 (fallthrough)
+branch  2 taken 0 (throw)
+        -:  183:
+        -:  184:        // Project input to Q, K, V for this head
+        8:  185:        auto Q = matmul(input, Wq);
+call    0 returned 8
+branch  1 taken 8 (fallthrough)
+branch  2 taken 0 (throw)
+        8:  186:        auto K = matmul(input, Wk);
+call    0 returned 8
+branch  1 taken 8 (fallthrough)
+branch  2 taken 0 (throw)
+        8:  187:        auto V = matmul(input, Wv);
+call    0 returned 8
+branch  1 taken 8 (fallthrough)
+branch  2 taken 0 (throw)
+        -:  188:
+        -:  189:        // Calculate attention scores
+       16:  190:        vector<vector<float>> scores(SEQ_LEN, vector<float>(SEQ_LEN, 0.0f));
+call    0 returned 8
+call    1 returned 8
+call    2 returned 8
+branch  3 taken 8 (fallthrough)
+branch  4 taken 0 (throw)
+call    5 returned 8
+branch  6 taken 8 (fallthrough)
+branch  7 taken 0 (throw)
+call    8 returned 8
+call    9 returned 8
+     8200:  191:        for (int i = 0; i < SEQ_LEN; i++)
+branch  0 taken 8192
+branch  1 taken 8 (fallthrough)
+        -:  192:        {
+  8396800:  193:            for (int j = 0; j < SEQ_LEN; j++)
+branch  0 taken 8388608
+branch  1 taken 8192 (fallthrough)
+        -:  194:            {
+  8388608:  195:                float dot_product = 0.0f;
+1082130432:  196:                for (int k = 0; k < HEAD_DIM; k++)
+branch  0 taken 1073741824
+branch  1 taken 8388608 (fallthrough)
+        -:  197:                {
+1073741824:  198:                    dot_product += Q[i][k] * K[j][k];
+call    0 returned 1073741824
+call    1 returned 1073741824
+call    2 returned 1073741824
+call    3 returned 1073741824
+        -:  199:                }
+  8388608:  200:                scores[i][j] = dot_product * scale_factor;
+call    0 returned 8388608
+call    1 returned 8388608
+        -:  201:            }
+        -:  202:        }
+        -:  203:
+        -:  204:        // Apply softmax to attention scores
+     8200:  205:        for (int i = 0; i < SEQ_LEN; i++)
+branch  0 taken 8192
+branch  1 taken 8 (fallthrough)
+        -:  206:        {
+        -:  207:            // Find max for numerical stability
+     8192:  208:            float max_val = scores[i][0];
+call    0 returned 8192
+call    1 returned 8192
+  8388608:  209:            for (int j = 1; j < SEQ_LEN; j++)
+branch  0 taken 8380416
+branch  1 taken 8192 (fallthrough)
+        -:  210:            {
+  8380416:  211:                max_val = max(max_val, scores[i][j]);
+call    0 returned 8380416
+call    1 returned 8380416
+call    2 returned 8380416
+        -:  212:            }
+        -:  213:
+        -:  214:            // Calculate exponentials and sum
+     8192:  215:            vector<float> exp_scores(SEQ_LEN);
+call    0 returned 8192
+call    1 returned 8192
+branch  2 taken 8192 (fallthrough)
+branch  3 taken 0 (throw)
+     8192:  216:            float sum_exp = 0.0f;
+  8396800:  217:            for (int j = 0; j < SEQ_LEN; j++)
+branch  0 taken 8388608
+branch  1 taken 8192 (fallthrough)
+        -:  218:            {
+  8388608:  219:                exp_scores[j] = exp(scores[i][j] - max_val);
+call    0 returned 8388608
+call    1 returned 8388608
+call    2 returned 8388608
+call    3 returned 8388608
+  8388608:  220:                sum_exp += exp_scores[j];
+call    0 returned 8388608
+        -:  221:            }
+        -:  222:
+        -:  223:            // Normalize
+  8396800:  224:            for (int j = 0; j < SEQ_LEN; j++)
+branch  0 taken 8388608
+branch  1 taken 8192 (fallthrough)
+        -:  225:            {
+  8388608:  226:                scores[i][j] = exp_scores[j] / sum_exp;
+call    0 returned 8388608
+call    1 returned 8388608
+call    2 returned 8388608
+        -:  227:            }
+     8192:  228:        }
+call    0 returned 8192
+        -:  229:
+        -:  230:        // Apply attention scores to values
+        8:  231:        head_outputs[h] = matmul(scores, V);
+call    0 returned 8
+branch  1 taken 8 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 8
+call    4 returned 8
+call    5 returned 8
+        8:  232:    }
+call    0 returned 8
+call    1 returned 8
+call    2 returned 8
+call    3 returned 8
+call    4 returned 8
+call    5 returned 8
+call    6 returned 8
+call    7 never executed
+call    8 never executed
+call    9 never executed
+call   10 never executed
+call   11 never executed
+call   12 never executed
+call   13 never executed
+        -:  233:
+        -:  234:    // Concatenate all head outputs
+        2:  235:    vector<vector<float>> concatenated(SEQ_LEN, vector<float>(EMBED_DIM));
+call    0 returned 1
+call    1 returned 1
+call    2 returned 1
+branch  3 taken 1 (fallthrough)
+branch  4 taken 0 (throw)
+call    5 returned 1
+branch  6 taken 1 (fallthrough)
+branch  7 taken 0 (throw)
+call    8 returned 1
+call    9 returned 1
+     1025:  236:    for (int i = 0; i < SEQ_LEN; i++)
+branch  0 taken 1024
+branch  1 taken 1 (fallthrough)
+        -:  237:    {
+     9216:  238:        for (int h = 0; h < NUM_HEADS; h++)
+branch  0 taken 8192
+branch  1 taken 1024 (fallthrough)
+        -:  239:        {
+  1056768:  240:            for (int j = 0; j < HEAD_DIM; j++)
+branch  0 taken 1048576
+branch  1 taken 8192 (fallthrough)
+        -:  241:            {
+  1048576:  242:                concatenated[i][h * HEAD_DIM + j] = head_outputs[h][i][j];
+call    0 returned 1048576
+call    1 returned 1048576
+call    2 returned 1048576
+call    3 returned 1048576
+call    4 returned 1048576
+        -:  243:            }
+        -:  244:        }
+        -:  245:    }
+        -:  246:
+        -:  247:    // Apply output projection
+        1:  248:    auto Wo = generate_random_matrix(EMBED_DIM, EMBED_DIM);
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        1:  249:    auto output = matmul(concatenated, Wo);
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        -:  250:
+        -:  251:    // Layer normalization
+        2:  252:    return layer_norm(output);
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        1:  253:}
+call    0 returned 1
+call    1 returned 1
+call    2 returned 1
+call    3 returned 1
+call    4 never executed
+call    5 never executed
+call    6 never executed
+call    7 never executed
+        -:  254://LIKWID_MARKER_STOP("SelfAttention");
+        -:  255:
+        -:  256://LIKWID_MARKER_START("FeedForward");
+        -:  257:// Feedforward Neural Network
+function _Z17feedforward_layerRKSt6vectorIS_IfSaIfEESaIS1_EE called 1 returned 100% blocks executed 76%
+        1:  258:vector<vector<float>> feedforward_layer(const vector<vector<float>> &input)
+        -:  259:{
+        1:  260:    auto W1 = generate_random_matrix(EMBED_DIM, HIDDEN_DIM);
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        1:  261:    auto W2 = generate_random_matrix(HIDDEN_DIM, EMBED_DIM);
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        -:  262:
+        -:  263:    // First layer with ReLU
+        1:  264:    auto hidden = matmul(input, W1);
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+     1025:  265:    for (auto &row : hidden)
+call    0 returned 1
+call    1 returned 1
+call    2 returned 1024
+call    3 returned 1024
+call    4 returned 1025
+branch  5 taken 1024
+branch  6 taken 1 (fallthrough)
+        -:  266:    {
+  2098176:  267:        for (auto &val : row)
+call    0 returned 1024
+call    1 returned 1024
+call    2 returned 2097152
+call    3 returned 2098176
+branch  4 taken 2097152
+branch  5 taken 1024 (fallthrough)
+        -:  268:        {
+  2097152:  269:            val = max(0.0f, val);
+call    0 returned 2097152
+call    1 returned 2097152
+        -:  270:        }
+        -:  271:    }
+        -:  272:
+        -:  273:    // Second layer
+        1:  274:    auto output = matmul(hidden, W2);
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        -:  275:
+        -:  276:    // Layer normalization
+        2:  277:    return layer_norm(output);
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        1:  278:}
+call    0 returned 1
+call    1 returned 1
+call    2 returned 1
+call    3 returned 1
+call    4 never executed
+call    5 never executed
+call    6 never executed
+call    7 never executed
+        -:  279://LIKWID_MARKER_STOP("FeedForward");
+        -:  280:
+        -:  281://LIKWID_MARKER_START("Softmax");
+        -:  282:// Softmax Function
+function _Z7softmaxRKSt6vectorIfSaIfEE called 1 returned 100% blocks executed 86%
+        1:  283:vector<float> softmax(const vector<float> &logits)
+        -:  284:{
+        1:  285:    vector<float> result(logits.size());
+call    0 returned 1
+call    1 returned 1
+call    2 returned 1
+branch  3 taken 1 (fallthrough)
+branch  4 taken 0 (throw)
+call    5 never executed
+        1:  286:    float max_val = *max_element(logits.begin(), logits.end()); // Prevent large exponentials
+call    0 returned 1
+call    1 returned 1
+call    2 returned 1
+branch  3 taken 1 (fallthrough)
+branch  4 taken 0 (throw)
+call    5 returned 1
+        1:  287:    float sum_exp = 0.0;
+        -:  288:
+     1025:  289:    for (float val : logits)
+call    0 returned 1
+call    1 returned 1
+call    2 returned 1024
+call    3 returned 1025
+branch  4 taken 1024
+branch  5 taken 1 (fallthrough)
+     1024:  290:        sum_exp += exp(val - max_val);
+call    0 returned 1024
+call    1 returned 1024
+        -:  291:
+     1025:  292:    for (size_t i = 0; i < logits.size(); i++)
+call    0 returned 1025
+branch  1 taken 1024
+branch  2 taken 1 (fallthrough)
+     1024:  293:        result[i] = exp(logits[i] - max_val) / sum_exp;
+call    0 returned 1024
+call    1 returned 1024
+call    2 returned 1024
+        -:  294:
+        1:  295:    return result;
+    =====:  296:}
+call    0 never executed
+        -:  297://LIKWID_MARKER_STOP("Softmax");
+        -:  298:
+function main called 1 returned 100% blocks executed 57%
+        1:  299:int main()
+        -:  300:{
+        -:  301:    //likwid_markerInit();
+        -:  302:    
+        -:  303:    //LIKWID_MARKER_START("Main")
+        -:  304:
+        -:  305:    // Generate Random Token Embeddings or Load Real BERT Embeddings
+        1:  306:    vector<vector<float>> token_embeddings = generate_random_matrix(SEQ_LEN, EMBED_DIM);
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        -:  307:    // vector<vector<float>> token_embeddings = load_bert_embeddings("bert_embeddings.csv");
+        -:  308:
+        -:  309:    // Print initial embeddings
+        1:  310:    print_matrix(token_embeddings, "Token Embeddings");
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+call    4 returned 1
+branch  5 taken 1 (fallthrough)
+branch  6 taken 0 (throw)
+call    7 returned 1
+call    8 returned 1
+call    9 never executed
+call   10 never executed
+        -:  311:
+        -:  312:    // Apply Self-Attention
+        1:  313:    vector<vector<float>> attention_output = self_attention(token_embeddings);
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        1:  314:    print_matrix(attention_output, "Self-Attention Output");
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+call    4 returned 1
+branch  5 taken 1 (fallthrough)
+branch  6 taken 0 (throw)
+call    7 returned 1
+call    8 returned 1
+call    9 never executed
+call   10 never executed
+        -:  315:
+        -:  316:    // Apply Feedforward Network
+        1:  317:    vector<vector<float>> final_output = feedforward_layer(attention_output);
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        1:  318:    print_matrix(final_output, "Feedforward Layer Output");
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+call    4 returned 1
+branch  5 taken 1 (fallthrough)
+branch  6 taken 0 (throw)
+call    7 returned 1
+call    8 returned 1
+call    9 never executed
+call   10 never executed
+        -:  319:
+        -:  320:    // Softmax over the last token's output
+        1:  321:    vector<float> softmax_output = softmax(final_output[SEQ_LEN - 1]);
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+        1:  322:    float sum = 0;
+     1025:  323:    for (float i : softmax_output)
+call    0 returned 1
+call    1 returned 1
+call    2 returned 1024
+call    3 returned 1025
+branch  4 taken 1024
+branch  5 taken 1 (fallthrough)
+     1024:  324:        sum += i;
+call    0 returned 1024
+        -:  325:
+        1:  326:    print_vector(softmax_output, "Softmax Output");
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+call    4 returned 1
+branch  5 taken 1 (fallthrough)
+branch  6 taken 0 (throw)
+call    7 returned 1
+call    8 returned 1
+call    9 never executed
+call   10 never executed
+        -:  327:
+        1:  328:    cout << "Self-Attention + Feedforward + Softmax applied successfully!" << endl;
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 1
+branch  4 taken 1 (fallthrough)
+branch  5 taken 0 (throw)
+        1:  329:    cout << "Sum of all values in the softmax output " << sum << endl;
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 1
+branch  4 taken 1 (fallthrough)
+branch  5 taken 0 (throw)
+call    6 returned 1
+branch  7 taken 1 (fallthrough)
+branch  8 taken 0 (throw)
+        -:  330:
+        -:  331:    //LIKWID_MARKER_STOP("Main");
+        -:  332:    
+        -:  333:    //likwid_markerClose();
+        1:  334:    return 0;
+        1:  335:}
+call    0 returned 1
+call    1 returned 1
+call    2 returned 1
+call    3 returned 1
+call    4 never executed
+call    5 never executed
+call    6 never executed
+call    7 never executed
